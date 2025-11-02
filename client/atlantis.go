@@ -7,6 +7,7 @@ import (
 	"path/filepath"
 	"strings"
 
+	"github.com/stretchr/testify/assert/yaml"
 	"github.com/zkfmapf123/at-plan/usecase"
 	"github.com/zkfmapf123/at-plan/utils"
 	"github.com/zkfmapf123/donggo"
@@ -22,8 +23,10 @@ var (
 )
 
 type AtlantisParams struct {
-	Request    *usecase.AtlantisRequest
-	httpClient *utils.ATHTTP
+	Request *usecase.AtlantisRequest
+
+	atlantisConfigParmas usecase.AtlantisConfigParams
+	httpClient           *utils.ATHTTP
 }
 
 func NewAtlantisRequest(atParams usecase.AtlantisRequest) AtlantisParams {
@@ -80,8 +83,13 @@ func (a *AtlantisParams) ValidRepository() error {
 
 func (a *AtlantisParams) ValidConfigFile() error {
 
-	pwd, _ := utils.GetPwd()
-	atFilePath := filepath.Join(pwd, a.Request.AtlantisConfigFile)
+	atFilePath := a.Request.AtlantisConfigFile
+
+	// 상대 경로면 절대 경로로 변환
+	if !filepath.IsAbs(atFilePath) {
+		pwd, _ := utils.GetPwd()
+		atFilePath = filepath.Join(pwd, atFilePath)
+	}
 
 	_, err := os.Stat(atFilePath)
 	if os.IsNotExist(err) {
@@ -91,4 +99,59 @@ func (a *AtlantisParams) ValidConfigFile() error {
 	// rewrite
 	a.Request.AtlantisConfigFile = atFilePath
 	return nil
+}
+
+func (a *AtlantisParams) SetConfigParmas() (usecase.AtlantisConfigParams, error) {
+
+	var params usecase.AtlantisConfigParams
+
+	if err := a.ValidConfigFile(); err != nil {
+		return usecase.AtlantisConfigParams{}, err
+	}
+
+	b, err := os.ReadFile(a.Request.AtlantisConfigFile)
+	if err != nil {
+		return usecase.AtlantisConfigParams{}, err
+	}
+
+	if err := yaml.Unmarshal(b, &params); err != nil {
+		return usecase.AtlantisConfigParams{}, err
+	}
+
+	a.atlantisConfigParmas = params
+	return params, nil
+}
+
+func (a *AtlantisParams) Plan() {
+
+	gitAttr := strings.Split(a.Request.AtlantisRepository, "/")
+	// owner := gitAttr[0]
+	repository := gitAttr[1]
+
+	for _, project := range a.atlantisConfigParmas.Projects {
+
+		resp, err := a.httpClient.Comm(
+			utils.HTTPParams{
+				Url:    fmt.Sprintf("%s%s", a.Request.AtlantisURL, API_PLAN),
+				Method: "POST",
+				Headers: map[string]string{
+					"X-Atlantis-Token": a.Request.AtlantisToken,
+					"Content-Type":     "application/json",
+				},
+				Body: map[string]any{
+					"Repository": repository,
+					"Ref":        a.Request.GithubRepoRef,
+					"Type":       "Github",
+					"Paths": []usecase.APIPlanBodyPaths{
+						{
+							Directory: project.Dir,
+							Workspace: project.Workflow,
+						},
+					},
+				},
+			},
+		)
+
+		fmt.Println(string(resp), err)
+	}
 }

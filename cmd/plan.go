@@ -1,8 +1,6 @@
 package cmd
 
 import (
-	"log"
-
 	"github.com/spf13/cobra"
 	"github.com/zkfmapf123/at-plan/client"
 	"github.com/zkfmapf123/at-plan/usecase"
@@ -18,9 +16,10 @@ var planCmd = &cobra.Command{
 
 		// validate
 		if err := validAtlantis(at); err != nil {
-			log.Println("failed to validate atlantis", err)
+			panic(err)
 		}
 
+		at.Plan()
 	},
 }
 
@@ -32,7 +31,7 @@ func validAtlantis(at client.AtlantisParams) error {
 		return err
 	}
 
-	if err = at.ValidConfigFile(); err != nil {
+	if _, err = at.SetConfigParmas(); err != nil {
 		return err
 	}
 
