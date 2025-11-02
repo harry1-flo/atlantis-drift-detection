@@ -8,6 +8,10 @@ import (
 func linesToPlanOutput(tfOutputs string) (add string, change string, destroy string) {
 
 	lines := strings.Split(tfOutputs, "Plan:")
+	if len(lines) < 2 {
+		return "", "", ""
+	}
+
 	re := regexp.MustCompile(`(\d+)\s+to add,\s+(\d+)\s+to change,\s+(\d+)\s+to destroy`)
 	matches := re.FindStringSubmatch(strings.TrimSpace(lines[1]))
 
