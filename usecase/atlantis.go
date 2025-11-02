@@ -22,8 +22,9 @@ type APIPlanBodyParams struct {
 }
 
 type APIPlanBodyPaths struct {
-	Directory string `json:"directory"`
-	Workspace string `json:"workspace,omitempty"` // default
+	ProjectName string `json:"ProjectName"`
+	Directory   string `json:"Directory"`
+	Workspace   string `json:"Workspace,omitempty"` // default
 }
 
 /*

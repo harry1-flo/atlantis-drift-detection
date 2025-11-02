@@ -15,19 +15,26 @@ var planCmd = &cobra.Command{
 		at := client.NewAtlantisRequest(atRequest)
 
 		// validate
-		if err := validAtlantis(at); err != nil {
+		if err := validAtlantis(&at); err != nil {
 			panic(err)
 		}
-
 		at.Plan()
 	},
 }
 
-func validAtlantis(at client.AtlantisParams) error {
+func validAtlantis(at *client.AtlantisParams) error {
 
 	var err error
 
 	if err = at.ValidURL(); err != nil {
+		return err
+	}
+
+	if err = at.ValidRepository(); err != nil {
+		return err
+	}
+
+	if err := at.ValidConfigFile(); err != nil {
 		return err
 	}
 

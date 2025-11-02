@@ -14,13 +14,20 @@ var rootCmd = &cobra.Command{
 	Short: "A CLI tool for managing your at-plan",
 	Long:  `A CLI tool for managing your at-plan`,
 	PersistentPreRun: func(cmd *cobra.Command, args []string) {
+		githubToken, _ := cmd.Flags().GetString("github-token")
+		githubRepoRef, _ := cmd.Flags().GetString("github-repo-ref")
+		atlantisURL, _ := cmd.Flags().GetString("atlantis-url")
+		atlantisToken, _ := cmd.Flags().GetString("atlantis-token")
+		atlantisRepository, _ := cmd.Flags().GetString("atlantis-repository")
+		atlantisConfig, _ := cmd.Flags().GetString("atlantis-config")
+
 		atRequest := usecase.AtlantisRequest{
-			cmd.Flag("github-token").Value.String(),
-			cmd.Flag("github-repo-ref").Value.String(),
-			cmd.Flag("atlantis-url").Value.String(),
-			cmd.Flag("atlantis-token").Value.String(),
-			cmd.Flag("atlantis-repository").Value.String(),
-			cmd.Flag("atlantis-config").Value.String(),
+			GithubToken:        githubToken,
+			GithubRepoRef:      githubRepoRef,
+			AtlantisURL:        atlantisURL,
+			AtlantisToken:      atlantisToken,
+			AtlantisRepository: atlantisRepository,
+			AtlantisConfigFile: atlantisConfig,
 		}
 
 		ctx := context.WithValue(context.Background(), "atlantis", atRequest)
@@ -30,7 +37,7 @@ var rootCmd = &cobra.Command{
 
 func init() {
 	rootCmd.PersistentFlags().StringP("github-token", "g", "", "The Github token")
-	rootCmd.PersistentFlags().StringP("github-repo-ref", "r", "", "The Github repository reference")
+	rootCmd.PersistentFlags().StringP("github-repo-ref", "f", "", "The Github repository reference")
 	rootCmd.PersistentFlags().StringP("atlantis-url", "u", "", "The Atlantis URL")
 	rootCmd.PersistentFlags().StringP("atlantis-token", "t", "", "The Atlantis token")
 	rootCmd.PersistentFlags().StringP("atlantis-repository", "r", "", "Atlantis Repository")

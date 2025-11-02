@@ -62,17 +62,17 @@ workflows:
 	err = at.ValidConfigFile()
 	assert.NoError(t, err)
 
-	params, err := at.SetConfigParmas()
+	_, err = at.SetConfigParmas()
 	assert.NoError(t, err)
 
-	assert.Equal(t, params.Version, "3")
-	assert.Equal(t, len(params.Projects), 2)
-	assert.Equal(t, params.Projects[0].Name, "ec2")
-	assert.Equal(t, params.Projects[0].Dir, "examples/ec2")
-	assert.Equal(t, params.Projects[0].Workflow, "terraform")
-	assert.Equal(t, params.Projects[1].Name, "sg")
-	assert.Equal(t, params.Projects[1].Dir, "examples/sg")
-	assert.Equal(t, params.Projects[1].Workflow, "terraform")
+	assert.Equal(t, at.atlantisConfigParmas.Version, "3")
+	assert.Equal(t, len(at.atlantisConfigParmas.Projects), 2)
+	assert.Equal(t, at.atlantisConfigParmas.Projects[0].Name, "ec2")
+	assert.Equal(t, at.atlantisConfigParmas.Projects[0].Dir, "examples/ec2")
+	assert.Equal(t, at.atlantisConfigParmas.Projects[0].Workflow, "terraform")
+	assert.Equal(t, at.atlantisConfigParmas.Projects[1].Name, "sg")
+	assert.Equal(t, at.atlantisConfigParmas.Projects[1].Dir, "examples/sg")
+	assert.Equal(t, at.atlantisConfigParmas.Projects[1].Workflow, "terraform")
 }
 
 func Test_ValidRepository(t *testing.T) {

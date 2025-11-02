@@ -124,9 +124,9 @@ func (a *AtlantisParams) SetConfigParmas() (usecase.AtlantisConfigParams, error)
 
 func (a *AtlantisParams) Plan() {
 
-	gitAttr := strings.Split(a.Request.AtlantisRepository, "/")
-	// owner := gitAttr[0]
-	repository := gitAttr[1]
+	// gitAttr := strings.Split(a.Request.AtlantisRepository, "/")
+	// // owner := gitAttr[0]
+	// repository := gitAttr[1]
 
 	for _, project := range a.atlantisConfigParmas.Projects {
 
@@ -139,19 +139,25 @@ func (a *AtlantisParams) Plan() {
 					"Content-Type":     "application/json",
 				},
 				Body: map[string]any{
-					"Repository": repository,
+					"Repository": a.Request.AtlantisRepository,
 					"Ref":        a.Request.GithubRepoRef,
 					"Type":       "Github",
 					"Paths": []usecase.APIPlanBodyPaths{
 						{
-							Directory: project.Dir,
-							Workspace: project.Workflow,
+							ProjectName: project.Name,
+							Directory:   project.Dir,
+							Workspace:   "default",
 						},
 					},
 				},
 			},
 		)
 
-		fmt.Println(string(resp), err)
+		if err != nil {
+			panic(err)
+		}
+
+		fmt.Println("error : ", err)
+		fmt.Println(string(resp))
 	}
 }

@@ -4,15 +4,16 @@ clear:
 .PHONY: build
 build: clear
 	go build -o at-plan main.go
+	sudo mv at-plan /usr/local/bin/
 
 run: build
-	sudo mv at-plan /usr/local/bin/ && \
 	at-plan plan \
-	-g github_token \
-	-u https://atlantis.example.com \
-	-t atlantis_token \
-	-r atlantis_repository \
-	-c atlantis_config_file
+	-g github-token \
+	-f master \
+	-u https://atlantis.dev.leedonggyu.com \
+	-t leedonggyu-1234 \
+	-r zkfmapf123/atlantis-fargate \
+	-c atlantis.yaml
 
 test:
 	go test -v ./...
