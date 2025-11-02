@@ -36,7 +36,13 @@ func SendSlack(
 	placeHolder := fmt.Sprintf("⚠️ Drift detected in %d project(s)\n", countNonEmptyOutputs(tfOutputs))
 	for dir, output := range tfOutputs {
 		add, change, destroy := linesToPlanOutput(output)
-		placeHolder += fmt.Sprintf("📁 Project : %s - Add: %s, Change: %s, Destroy: %s\n", dir, add, change, destroy)
+
+		if add != "" || change != "" || destroy != "" {
+			placeHolder += fmt.Sprintf("📁 Project : %s - No Changes\n", dir)
+		} else {
+			placeHolder += fmt.Sprintf("📁 Project : %s - Add: %s, Change: %s, Destroy: %s\n", dir, add, change, destroy)
+
+		}
 	}
 
 	params := slack.UploadFileV2Parameters{
