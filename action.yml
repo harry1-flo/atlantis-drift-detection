@@ -1,5 +1,5 @@
 name: "Atlantis Drift Detection"
-description: "Detect infra drift using Atlantis and notift"
+description: "Detect infra drift using Atlantis and notify"
 author: "harry"
 
 branding:
@@ -44,9 +44,11 @@ runs:
       with:
         go-version: "1.24"
 
-    - name: Build
+    - name: Build-arm64
       shell: bash
-      run: make amd-runner-build
+      run: |
+        cd ${{ github.action_path }}
+        GOOS=linux GOARCH=arm64 go build -o at-plan main.go
 
     - name: Run Drift Detection
       shell: bash
