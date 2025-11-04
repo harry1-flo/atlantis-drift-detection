@@ -1,0 +1,86 @@
+package cmd
+
+import (
+	"github.com/spf13/cobra"
+	"github.com/zkfmapf123/at-plan/client"
+	"github.com/zkfmapf123/at-plan/usecase"
+)
+
+/*
+요구사항 정의
+PR 생성 시
+
+	-> Init 실패 / 성공 여부 확인
+	-> validate 여부 확인 (계속 확인되어야 함)
+	-> Apply 시, 실패 성공 여부 확인
+
+슬랙메시지 시, 아래 스레드로 달릴 수 있는지?
+*/
+var githubCmd = &cobra.Command{
+	Use:   "github",
+	Short: "A CLI tool for managing your github",
+	Long:  `A CLI tool for managing your github`,
+	Run: func(cmd *cobra.Command, args []string) {
+
+		var atReqParams usecase.AtlantisRequestParams
+		atReqParams.BranchRef = cmd.PersistentFlags().Lookup("at-branch-ref").Value.String()
+		atReqParams.BranchName = cmd.PersistentFlags().Lookup("at-branch-name").Value.String()
+		atReqParams.RepoName = cmd.PersistentFlags().Lookup("at-repo-name").Value.String()
+		atReqParams.RepoCommitHash = cmd.PersistentFlags().Lookup("at-commit-hash").Value.String()
+		atReqParams.PRNum = cmd.PersistentFlags().Lookup("at-pr-num").Value.String()
+		atReqParams.PRURL = cmd.PersistentFlags().Lookup("at-pr-url").Value.String()
+		atReqParams.PRAuthor = cmd.PersistentFlags().Lookup("at-pr-author").Value.String()
+		atReqParams.GHToken = cmd.PersistentFlags().Lookup("at-gh-token").Value.String()
+		atReqParams.ATCommand = cmd.PersistentFlags().Lookup("at-command").Value.String()
+		atReqParams.Owner = cmd.PersistentFlags().Lookup("at-owner").Value.String()
+		atReqParams.SlackWebhookURL = cmd.PersistentFlags().Lookup("at-slack-webhook-url").Value.String()
+		atReqParams.RepoRelDir = cmd.PersistentFlags().Lookup("at-repo-rel-dir").Value.String()
+		atReqParams.ChannelName = cmd.PersistentFlags().Lookup("at-channel-name").Value.String()
+
+		gc := client.NewGithubRequest(atReqParams)
+
+		prParams, isNewPR := gc.IsNewPR()
+
+		prParams.Pusher = atReqParams.PRAuthor
+		prParams.PushCommit = atReqParams.RepoCommitHash
+		prParams.Command = atReqParams.ATCommand
+
+		// PR 처음인 경우
+		if isNewPR {
+
+		}
+
+		// PR 처음은 아니지만, command validate 일 경우
+		if !isNewPR && atReqParams.ATCommand == "validate" {
+
+		}
+
+		// PR 처음은 아니지만, plan 일 경우
+		if !isNewPR && atReqParams.ATCommand == "plan" {
+
+		}
+
+		// PR 처음은 아니지만, apply 일 경우
+		if !isNewPR && atReqParams.ATCommand == "apply" {
+
+		}
+
+	},
+}
+
+func init() {
+	githubCmd.PersistentFlags().String("at-branch-ref", "", "The Atlantis branch reference")
+	githubCmd.PersistentFlags().String("at-branch-name", "", "The Atlantis branch name")
+	githubCmd.PersistentFlags().String("at-repo-name", "", "The Atlantis repository name")
+	githubCmd.PersistentFlags().String("at-commit-hash", "", "The Atlantis commit hash")
+	githubCmd.PersistentFlags().String("at-pr-num", "", "The Atlantis PR number")
+	githubCmd.PersistentFlags().String("at-pr-url", "", "The Atlantis PR URL")
+	githubCmd.PersistentFlags().String("at-pr-author", "", "The Atlantis PR author")
+	githubCmd.PersistentFlags().String("at-gh-token", "", "The Github token")
+	githubCmd.PersistentFlags().String("at-command", "", "The Atlantis command")
+	githubCmd.PersistentFlags().String("at-owner", "", "The Atlantis owner")
+	githubCmd.PersistentFlags().String("at-slack-webhook-url", "", "The Atlantis slack webhook URL")
+	githubCmd.PersistentFlags().String("at-repo-rel-dir", "", "The Atlantis repository relative directory")
+	githubCmd.PersistentFlags().String("at-channel-name", "", "The Atlantis channel name")
+
+}

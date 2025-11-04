@@ -3,7 +3,7 @@ clear:
 
 .PHONY: build
 build: clear
-	go build -o at-plan main.go
+	go build -o at-plan main.go && \
 	sudo mv at-plan /usr/local/bin/
 
 amd-runner-build:

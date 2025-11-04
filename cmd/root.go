@@ -52,6 +52,7 @@ func init() {
 
 func Execute() {
 	rootCmd.AddCommand(planCmd)
+	rootCmd.AddCommand(githubCmd)
 
 	if err := rootCmd.Execute(); err != nil {
 		log.Println("Error executing command:", err)
