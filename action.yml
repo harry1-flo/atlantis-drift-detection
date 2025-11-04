@@ -1,0 +1,62 @@
+name: "Atlantis Drift Detection"
+description: "Detect infra drift using Atlantis and notift"
+author: "harry"
+
+branding:
+  icon: "alert-circle"
+  color: "blue"
+
+inputs:
+  github-token:
+    description: "GitHub token for repository access"
+    required: true
+  github-repo-ref:
+    description: "GitHub repository reference (branch name)"
+    required: false
+    default: "main"
+  atlantis-url:
+    description: "Atlantis server URL"
+    required: true
+  atlantis-token:
+    description: "Atlantis API token"
+    required: true
+  atlantis-repository:
+    description: "Atlantis repository (owner/repo-name)"
+    required: true
+  atlantis-config:
+    description: "Atlantis config file path"
+    required: false
+    default: "atlantis.yaml"
+  slack-bot-token:
+    description: "Slack bot token for notifications"
+    required: false
+    default: ""
+  slack-channel:
+    description: "Slack channel ID for notifications"
+    required: false
+    default: ""
+
+runs:
+  using: "composite"
+  steps:
+    - name: Setup Go
+      uses: actions/setup-go@v5
+      with:
+        go-version: "1.24"
+
+    - name: Build
+      shell: bash
+      run: make amd-runner-build
+
+    - name: Run Drift Detection
+      shell: bash
+      run: |
+        ./at-plan plan \
+          -g "${{ inputs.github-token }}" \
+          -f "${{ inputs.github-repo-ref }}" \
+          -u "${{ inputs.atlantis-url }}" \
+          -t "${{ inputs.atlantis-token }}" \
+          -r "${{ inputs.atlantis-repository }}" \
+          -c "${{ inputs.atlantis-config }}" \
+          -s "${{ inputs.slack-bot-token }}" \
+          -l "${{ inputs.slack-channel }}"
