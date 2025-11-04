@@ -101,18 +101,40 @@ func countNonEmptyOutputs(tfOutputs map[string]string) int {
 	return count
 }
 
-func SendSlackAtlantisNoti(slackBotToken string, slackChannel string, params usecase.PRParams, status string) error {
+var (
+	NEW      = "new"
+	VALIDATE = "validate"
+	PLAN     = "plan"
+	APPLY    = "apply"
+	ERROR    = "error"
+	FAILED   = "failed"
+)
 
-	if slackBotToken == "" || slackChannel == "" {
-		return errors.New("slack bot token or channel is empty")
+// Slack Template Atlantis
+func SendSlackAtlantisNoti(params usecase.PRParams, status string) error {
+
+	if params.SlackBotToken == "" {
+		return errors.New("slack bot token is empty")
 	}
 
-	api := slack.New(slackBotToken)
+	api := slack.New(params.SlackBotToken)
 
 	// Status에 따라 색상과 이모지 결정
 	color := getStatusColor(status)
 	emoji := getStatusEmoji(status)
-	title := fmt.Sprintf("[%s] %s", getCommandTitle(params.Command), status)
+
+	var title string
+	switch status {
+
+	case NEW:
+		title = usecase.NewPR(params.Command, params.Number)
+	case VALIDATE:
+		title = usecase.Validate(params.Command, params.Number)
+	case PLAN:
+		title = usecase.Plan(params.Command, params.Number)
+	case APPLY:
+		title = usecase.Apply(params.Command, params.Number)
+	}
 
 	attachment := slack.Attachment{
 		Color: color,
@@ -125,7 +147,7 @@ func SendSlackAtlantisNoti(slackBotToken string, slackChannel string, params use
 			},
 			{
 				Title: "Status",
-				Value: fmt.Sprintf("%s Terraform %s %s", emoji, getCommandTitle(params.Command), status),
+				Value: fmt.Sprintf("%s Terraform %s %s", emoji, getCommandTitle(params.Command), params.State),
 				Short: false,
 			},
 			{
@@ -140,20 +162,20 @@ func SendSlackAtlantisNoti(slackBotToken string, slackChannel string, params use
 			},
 			{
 				Title: "Project",
-				Value: extractProjectName(params.RepoRelDir),
-				Short: true,
-			},
-			{
-				Title: "Directory",
 				Value: params.RepoRelDir,
 				Short: true,
 			},
+			{
+				Title: "Short-Messages",
+				Value: params.Outputs,
+				Short: true,
+			},
 		},
-		Footer: fmt.Sprintf("PR #%s • %s commits • %s files changed", params.Number, params.Commits, params.ChangeFileCount),
+		Footer: fmt.Sprintf("PR #%d • %d commits • %d files changed", params.Number, params.Commits, params.ChangeFileCount),
 	}
 
 	_, _, err := api.PostMessage(
-		slackChannel,
+		params.SlackChannel,
 		slack.MsgOptionAttachments(attachment),
 	)
 
@@ -168,13 +190,13 @@ func SendSlackAtlantisNoti(slackBotToken string, slackChannel string, params use
 // getStatusColor returns color based on status
 func getStatusColor(status string) string {
 	switch strings.ToLower(status) {
-	case "success":
+	case NEW:
 		return "good" // 초록색
-	case "running", "pending":
+	case PLAN, APPLY:
 		return "#0000FF" // 파란색
-	case "failed", "error":
+	case ERROR, FAILED:
 		return "danger" // 빨간색
-	default:
+	default: // validate
 		return "#808080" // 회색
 	}
 }
@@ -182,11 +204,11 @@ func getStatusColor(status string) string {
 // getStatusEmoji returns emoji based on status
 func getStatusEmoji(status string) string {
 	switch strings.ToLower(status) {
-	case "success":
+	case PLAN, APPLY:
 		return "✅"
-	case "running", "pending":
+	case VALIDATE:
 		return "🔄"
-	case "failed", "error":
+	case ERROR, FAILED:
 		return "❌"
 	default:
 		return "ℹ️"
@@ -205,13 +227,4 @@ func getCommandTitle(command string) string {
 	default:
 		return strings.Title(command)
 	}
-}
-
-// extractProjectName extracts project name from directory path
-func extractProjectName(dir string) string {
-	parts := strings.Split(dir, "/")
-	if len(parts) > 0 {
-		return parts[len(parts)-1]
-	}
-	return dir
 }

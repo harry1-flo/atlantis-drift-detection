@@ -33,17 +33,21 @@ var githubCmd = &cobra.Command{
 		atReqParams.GHToken = cmd.PersistentFlags().Lookup("at-gh-token").Value.String()
 		atReqParams.ATCommand = cmd.PersistentFlags().Lookup("at-command").Value.String()
 		atReqParams.Owner = cmd.PersistentFlags().Lookup("at-owner").Value.String()
-		atReqParams.SlackWebhookURL = cmd.PersistentFlags().Lookup("at-slack-webhook-url").Value.String()
 		atReqParams.RepoRelDir = cmd.PersistentFlags().Lookup("at-repo-rel-dir").Value.String()
-		atReqParams.ChannelName = cmd.PersistentFlags().Lookup("at-channel-name").Value.String()
+		atReqParams.SlackBotToken = cmd.PersistentFlags().Lookup("at-slack-bottoken").Value.String()
+		atReqParams.SlackChannel = cmd.PersistentFlags().Lookup("at-slack-channel").Value.String()
+		atReqParams.Outputs = cmd.PersistentFlags().Lookup("at-outputs").Value.String()
 
 		gc := client.NewGithubRequest(atReqParams)
 
 		prParams, isNewPR := gc.IsNewPR()
-
 		prParams.Pusher = atReqParams.PRAuthor
 		prParams.PushCommit = atReqParams.RepoCommitHash
 		prParams.Command = atReqParams.ATCommand
+		prParams.SlackBotToken = atReqParams.SlackBotToken
+		prParams.SlackChannel = atReqParams.SlackChannel
+		prParams.Outputs = atReqParams.Outputs
+		prParams.RepoRelDir = atReqParams.RepoRelDir
 
 		// PR 처음인 경우
 		if isNewPR {
@@ -79,8 +83,9 @@ func init() {
 	githubCmd.PersistentFlags().String("at-gh-token", "", "The Github token")
 	githubCmd.PersistentFlags().String("at-command", "", "The Atlantis command")
 	githubCmd.PersistentFlags().String("at-owner", "", "The Atlantis owner")
-	githubCmd.PersistentFlags().String("at-slack-webhook-url", "", "The Atlantis slack webhook URL")
 	githubCmd.PersistentFlags().String("at-repo-rel-dir", "", "The Atlantis repository relative directory")
-	githubCmd.PersistentFlags().String("at-channel-name", "", "The Atlantis channel name")
+	githubCmd.PersistentFlags().String("at-slack-bottoken", "", "The Atlantis slack webhook URL")
+	githubCmd.PersistentFlags().String("at-slack-channel", "", "The Atlantis slack channel")
+	githubCmd.PersistentFlags().String("at-outputs", "", "The Atlantis outputs")
 
 }
