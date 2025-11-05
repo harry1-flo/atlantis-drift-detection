@@ -2,6 +2,15 @@ package usecase
 
 import "fmt"
 
+var (
+	VALIDATE = "validate"
+	PLAN     = "plan"
+	APPLY    = "apply"
+
+	ERROR  = "error"
+	FAILED = "failed"
+)
+
 type AtlantisRequestParams struct {
 	BranchRef      string
 	BranchName     string

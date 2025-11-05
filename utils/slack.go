@@ -101,15 +101,6 @@ func countNonEmptyOutputs(tfOutputs map[string]string) int {
 	return count
 }
 
-var (
-	NEW      = "new"
-	VALIDATE = "validate"
-	PLAN     = "plan"
-	APPLY    = "apply"
-	ERROR    = "error"
-	FAILED   = "failed"
-)
-
 // Slack Template Atlantis
 func SendSlackAtlantisNoti(params usecase.PRParams, status string) error {
 
@@ -119,20 +110,19 @@ func SendSlackAtlantisNoti(params usecase.PRParams, status string) error {
 
 	api := slack.New(params.SlackBotToken)
 
-	// Status에 따라 색상과 이모지 결정
+	/*
+		Success or Failed
+	*/
 	color := getStatusColor(status)
 	emoji := getStatusEmoji(status)
 
 	var title string
-	switch status {
-
-	case NEW:
-		title = usecase.NewPR(params.Command, params.Number)
-	case VALIDATE:
+	switch params.Command {
+	case usecase.VALIDATE:
 		title = usecase.Validate(params.Command, params.Number)
-	case PLAN:
+	case usecase.PLAN:
 		title = usecase.Plan(params.Command, params.Number)
-	case APPLY:
+	case usecase.APPLY:
 		title = usecase.Apply(params.Command, params.Number)
 	}
 
@@ -183,32 +173,28 @@ func SendSlackAtlantisNoti(params usecase.PRParams, status string) error {
 		return fmt.Errorf("slack message failed: %w", err)
 	}
 
-	fmt.Println("✅ Slack notification sent successfully!")
+	fmt.Println("✅ Slack notification sent successfully! status : ", params.State)
 	return nil
 }
 
 // getStatusColor returns color based on status
 func getStatusColor(status string) string {
 	switch strings.ToLower(status) {
-	case NEW:
-		return "good" // 초록색
-	case PLAN, APPLY:
-		return "#0000FF" // 파란색
-	case ERROR, FAILED:
-		return "danger" // 빨간색
-	default: // validate
-		return "#808080" // 회색
+	case "success":
+		return "good"
+	case "failed":
+		return "danger"
+	default:
+		return "#808080"
 	}
 }
 
 // getStatusEmoji returns emoji based on status
 func getStatusEmoji(status string) string {
 	switch strings.ToLower(status) {
-	case PLAN, APPLY:
+	case "success":
 		return "✅"
-	case VALIDATE:
-		return "🔄"
-	case ERROR, FAILED:
+	case "failed":
 		return "❌"
 	default:
 		return "ℹ️"

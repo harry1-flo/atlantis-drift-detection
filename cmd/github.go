@@ -1,9 +1,12 @@
 package cmd
 
 import (
+	"log"
+
 	"github.com/spf13/cobra"
 	"github.com/zkfmapf123/at-plan/client"
 	"github.com/zkfmapf123/at-plan/usecase"
+	"github.com/zkfmapf123/at-plan/utils"
 )
 
 /*
@@ -38,7 +41,10 @@ var githubCmd = &cobra.Command{
 		atReqParams.SlackChannel = cmd.PersistentFlags().Lookup("at-slack-channel").Value.String()
 		atReqParams.Outputs = cmd.PersistentFlags().Lookup("at-outputs").Value.String()
 
-		gc := client.NewGithubRequest(atReqParams)
+		gc, err := client.NewGithubRequest(atReqParams)
+		if err != nil {
+			log.Fatalf("github request error: %s", err)
+		}
 
 		prParams, isNewPR := gc.IsNewPR()
 		prParams.Pusher = atReqParams.PRAuthor
@@ -49,26 +55,34 @@ var githubCmd = &cobra.Command{
 		prParams.Outputs = atReqParams.Outputs
 		prParams.RepoRelDir = atReqParams.RepoRelDir
 
+		status, msg := utils.LinseToParseLastMesasge(atReqParams.Outputs)
+		prParams.Outputs = msg
+
 		// PR 처음인 경우
 		if isNewPR {
 
+			utils.SendSlackAtlantisNoti(prParams, status)
 		}
 
-		// PR 처음은 아니지만, command validate 일 경우
-		if !isNewPR && atReqParams.ATCommand == "validate" {
-
-		}
-
-		// PR 처음은 아니지만, plan 일 경우
-		if !isNewPR && atReqParams.ATCommand == "plan" {
+		// init / validate 실패
+		if atReqParams.ATCommand == usecase.VALIDATE {
 
 		}
 
-		// PR 처음은 아니지만, apply 일 경우
-		if !isNewPR && atReqParams.ATCommand == "apply" {
+		// plan 실패
+		if atReqParams.ATCommand == usecase.PLAN {
 
 		}
 
+		// apply 성공
+		if atReqParams.ATCommand == usecase.APPLY {
+
+		}
+
+		// apply 실패
+		if atReqParams.ATCommand == usecase.APPLY {
+
+		}
 	},
 }
 
