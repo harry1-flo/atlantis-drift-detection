@@ -25,3 +25,24 @@ func linesToPlanOutput(tfOutputs string) (add string, change string, destroy str
 
 	return add, change, destroy
 }
+
+func LinseToParseLastMesasge(tfOutput string) (string, string) {
+	lines := strings.TrimSpace(tfOutput)
+
+	// Success
+	if strings.Contains(lines, "Success!") {
+		return "success", lines
+	}
+
+	if strings.Contains(lines, "Error") {
+		re := regexp.MustCompile(`(?m)^Error:.*$`)
+		match := re.FindString(lines)
+
+		if match != "" {
+			return "failed", match
+		}
+	}
+
+	// Failed
+	return "failed", ""
+}

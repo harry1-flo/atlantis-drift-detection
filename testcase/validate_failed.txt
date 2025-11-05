@@ -1,0 +1,30 @@
+Error: Module not installed
+ 
+   on asg_test-tf-harry-asg.tf line 4:
+    4: module "test_tf_juliet_asg" {
+ 
+ This module's local cache directory  could not be read. Run "terraform init" to install all modules required by this configuration.
+╵
+╷
+ Error: Module not installed
+ 
+   on sg_test_tf_harry.tf line 1:
+    1: module "sg_test_tf_harry" {
+ 
+ This module's local cache directory  could not be read. Run "terraform init" to install all modules required by this configuration.
+╵
+╷
+ Error: Module not installed
+ 
+   on tf-harry-test.tf line 1:
+    1: module "test_tf_harry_ec2" {
+ 
+ This module's local cache directory  could not be read. Run "terraform init" to install all modules required by this configuration.
+╵
+╷
+ Error: Module not installed
+ 
+   on tf-kai-test.tf line 1:
+    1: module "test_tf_kai_ec2" {
+ 
+ This module's local cache directory  could not be read. Run "terraform init" to install all modules required by this configuration.

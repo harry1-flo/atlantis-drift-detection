@@ -7,6 +7,7 @@ import (
 	"strings"
 
 	"github.com/slack-go/slack"
+	"github.com/zkfmapf123/at-plan/usecase"
 )
 
 func SendSlack(
@@ -98,4 +99,118 @@ func countNonEmptyOutputs(tfOutputs map[string]string) int {
 		}
 	}
 	return count
+}
+
+// Slack Template Atlantis
+func SendSlackAtlantisNoti(params usecase.PRParams, status string) error {
+
+	if params.SlackBotToken == "" {
+		return errors.New("slack bot token is empty")
+	}
+
+	api := slack.New(params.SlackBotToken)
+
+	/*
+		Success or Failed
+	*/
+	color := getStatusColor(status)
+	emoji := getStatusEmoji(status)
+
+	var title string
+	switch params.Command {
+	case usecase.VALIDATE:
+		title = usecase.Validate(params.Command, params.Number)
+	case usecase.PLAN:
+		title = usecase.Plan(params.Command, params.Number)
+	case usecase.APPLY:
+		title = usecase.Apply(params.Command, params.Number)
+	}
+
+	attachment := slack.Attachment{
+		Color: color,
+		Title: title,
+		Fields: []slack.AttachmentField{
+			{
+				Title: "PR Link",
+				Value: params.URL,
+				Short: false,
+			},
+			{
+				Title: "Status",
+				Value: fmt.Sprintf("%s Terraform %s %s", emoji, getCommandTitle(params.Command), params.State),
+				Short: false,
+			},
+			{
+				Title: "Pusher",
+				Value: params.Pusher,
+				Short: true,
+			},
+			{
+				Title: "Commit",
+				Value: params.PushCommit[:7], // short commit hash
+				Short: true,
+			},
+			{
+				Title: "Project",
+				Value: params.RepoRelDir,
+				Short: true,
+			},
+			{
+				Title: "Short-Messages",
+				Value: params.Outputs,
+				Short: true,
+			},
+		},
+		Footer: fmt.Sprintf("PR #%d • %d commits • %d files changed", params.Number, params.Commits, params.ChangeFileCount),
+	}
+
+	_, _, err := api.PostMessage(
+		params.SlackChannel,
+		slack.MsgOptionAttachments(attachment),
+	)
+
+	if err != nil {
+		return fmt.Errorf("slack message failed: %w", err)
+	}
+
+	fmt.Println("✅ Slack notification sent successfully! status : ", params.State)
+	return nil
+}
+
+// getStatusColor returns color based on status
+func getStatusColor(status string) string {
+	switch strings.ToLower(status) {
+	case "success":
+		return "good"
+	case "failed":
+		return "danger"
+	default:
+		return "#808080"
+	}
+}
+
+// getStatusEmoji returns emoji based on status
+func getStatusEmoji(status string) string {
+	switch strings.ToLower(status) {
+	case "success":
+		return "✅"
+	case "failed":
+		return "❌"
+	default:
+		return "ℹ️"
+	}
+}
+
+// getCommandTitle returns formatted command title
+func getCommandTitle(command string) string {
+	switch strings.ToLower(command) {
+	case "validate":
+		return "Validate"
+	case "plan":
+		return "Plan"
+	case "apply":
+		return "Apply"
+	default:
+		return strings.Title(command)
+	}
 }
