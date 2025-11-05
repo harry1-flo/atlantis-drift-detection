@@ -60,29 +60,22 @@ var githubCmd = &cobra.Command{
 
 		// PR 처음인 경우
 		if isNewPR {
-
 			utils.SendSlackAtlantisNoti(prParams, status)
+			return
 		}
 
-		// init / validate 실패
-		if atReqParams.ATCommand == usecase.VALIDATE {
-
+		/*
+			init / validate 실패
+			plan 실패
+			apply 성공
+			apply 실패
+		*/
+		if status == "failed" || prParams.Command == usecase.APPLY {
+			utils.SendSlackAtlantisNoti(prParams, status)
+			return
 		}
 
-		// plan 실패
-		if atReqParams.ATCommand == usecase.PLAN {
-
-		}
-
-		// apply 성공
-		if atReqParams.ATCommand == usecase.APPLY {
-
-		}
-
-		// apply 실패
-		if atReqParams.ATCommand == usecase.APPLY {
-
-		}
+		return
 	},
 }
 
