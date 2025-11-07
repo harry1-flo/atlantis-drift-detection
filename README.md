@@ -29,3 +29,19 @@
 
     gh relase create [version] --title [title] --notes [notes] path
 ```
+
+./tt notification \
+--at-branch-ref tt \
+--at-branch-name tt \
+--at-repo-name tt \
+--at-commit-hash tt \
+--at-pr-num tt \
+--at-pr-url tt \
+--at-pr-author tt \
+--at-gh-token tt \
+--at-command validate \
+--at-owner tt \
+--at-repo-rel-dir tt \
+--at-slack-bottoken tt \
+--at-slack-channel tt \
+--at-outputs asdf

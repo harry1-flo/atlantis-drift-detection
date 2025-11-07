@@ -45,6 +45,7 @@ var notificationCmd = &cobra.Command{
 
 		gc, err := client.NewGithubRequest(atReqParams)
 		if err != nil {
+			log.Println("atReqParams : ", atReqParams)
 			log.Fatalf("github request error: %s", err)
 		}
 
