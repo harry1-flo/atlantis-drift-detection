@@ -51,6 +51,7 @@ func init() {
 }
 
 func Execute() {
+	rootCmd.AddCommand(healthCmd)
 	rootCmd.AddCommand(planCmd)
 	rootCmd.AddCommand(githubCmd)
 
