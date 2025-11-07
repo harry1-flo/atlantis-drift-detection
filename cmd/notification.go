@@ -58,6 +58,8 @@ var notificationCmd = &cobra.Command{
 		prParams.Outputs = atReqParams.Outputs
 		prParams.RepoRelDir = atReqParams.RepoRelDir
 
+		log.Println("isNewPR : %s\tstatus : %s\tshortMessage : %s", isNewPR, status, shortMessage)
+
 		// PR 처음인 경우
 		if isNewPR {
 			utils.SendSlackAtlantisNoti(prParams, status)

@@ -3,7 +3,6 @@ package client
 import (
 	"errors"
 	"fmt"
-	"log"
 	"strings"
 
 	"github.com/zkfmapf123/at-plan/usecase"
@@ -98,7 +97,7 @@ func (g GithubParmas) IsNewPR() (usecase.PRParams, bool) {
 
 	result := donggo.JsonParse[usecase.PRParams](resp)
 
-	log.Printf("Git PR Number : %d Status : %s Comments Count : %d", result.Number, result.State, result.PRComments)
+	// log.Printf("Git PR Number : %d Status : %s Comments Count : %d", result.Number, result.State, result.PRComments)
 
 	return result, result.State == "open" && result.Commits == 0
 }
