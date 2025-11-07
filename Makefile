@@ -27,4 +27,4 @@ test:
 	go test -v ./...
 
 relase: 
-	gh relase create 
+	gh relase create ${VERSION} ./at-plan

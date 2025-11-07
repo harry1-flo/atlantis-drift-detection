@@ -58,6 +58,7 @@ var notificationCmd = &cobra.Command{
 		status, msg := utils.LinseToParseLastMesasge(atReqParams.Outputs)
 		prParams.Outputs = msg
 
+		log.Println("atReqParams.Outputs : ", atReqParams.Outputs)
 		log.Println("parsing Terraform Outputs : ", msg)
 		log.Println(">>>>>>>>>>>>>> isNewPR : ", isNewPR, "status : ", status, "command : ", prParams.Command)
 
@@ -73,7 +74,7 @@ var notificationCmd = &cobra.Command{
 			apply 성공
 			apply 실패
 		*/
-		if status == "failed" || prParams.Command == usecase.APPLY {
+		if status == "failed" && (prParams.Command == usecase.PLAN || prParams.Command == usecase.APPLY) {
 			utils.SendSlackAtlantisNoti(prParams, status)
 			return
 		}

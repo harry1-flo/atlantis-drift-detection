@@ -35,12 +35,9 @@ func LinseToParseLastMesasge(tfOutput string) (string, string) {
 	}
 
 	if strings.Contains(lines, "Error") {
-		re := regexp.MustCompile(`(?m)^Error:.*$`)
-		match := re.FindString(lines)
 
-		if match != "" {
-			return "failed", match
-		}
+		lines := strings.ReplaceAll(lines, "│", "\n")
+		return "failed", lines
 	}
 
 	// Failed
