@@ -19,3 +19,13 @@
     make build
     make run
 ```
+
+## Release Update
+
+```sh
+    brew install gh
+
+    gh auth login
+
+    gh relase create [version] --title [title] --notes [notes] path
+```

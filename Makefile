@@ -10,7 +10,7 @@ amd-runner-build:
 	GOOS=linux GOARCH=amd64 go build -o at-plan main.go
 
 arm-runner-build:
-	GOOS=linux GOARCH=arm64 go build -o at-plan main.go
+	CGO_ENABLED=0 GOOS=linux GOARCH=arm64 go build -o at-plan main.go
 
 run: build
 	at-plan plan \
