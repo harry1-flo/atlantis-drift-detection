@@ -1,7 +1,6 @@
 package utils
 
 import (
-	"fmt"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -21,12 +20,4 @@ func Test_lineToPlanOutput(t *testing.T) {
 		assert.Equal(t, change, "0")
 		assert.Equal(t, destroy, "1")
 	}
-}
-
-func Test_linseToParseErrorOutput(t *testing.T) {
-	status, result := LinseToParseLastMesasge(string(errorPlanScript))
-
-	fmt.Println("status : ", status)
-	fmt.Println("result : ", result)
-
 }

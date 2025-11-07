@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"log"
+	"strings"
 
 	"github.com/zkfmapf123/at-plan/usecase"
 	"github.com/zkfmapf123/at-plan/utils"
@@ -100,4 +101,67 @@ func (g GithubParmas) IsNewPR() (usecase.PRParams, bool) {
 	log.Printf("Git PR Number : %d Status : %s Comments Count : %d", result.Number, result.State, result.PRComments)
 
 	return result, result.State == "open" && result.Commits == 0
+}
+
+func (g GithubParmas) GetCommentsLastPR() (status string, shortMessage string) {
+
+	resp, err := g.httpClient.Comm(
+		utils.HTTPParams{
+			Url: fmt.Sprintf("https://api.github.com/repos/%s/%s/issues/%s/comments",
+				g.Request.Owner, g.Request.RepoName, g.Request.PRNum),
+			Method: "GET",
+			Headers: map[string]string{
+				"Authorization": fmt.Sprintf("Bearer %s", g.Request.GHToken),
+				"Accept":        "application/vnd.github+json",
+			},
+		},
+	)
+
+	if err != nil {
+		panic(err)
+	}
+
+	results := donggo.JsonParse[[]usecase.PRComments](resp)
+
+	// PR
+	if len(results) == 1 {
+		return "success", ""
+	}
+
+	// Get Last Comment
+	lastResults := results[len(results)-1]
+
+	// Set Status
+	status = "success"
+	if strings.Contains(lastResults.Body, "Error") {
+		status = "failed"
+	}
+
+	shortMessage = strings.ReplaceAll(lastResults.Body, "│", "\n")
+
+	// Extract Error message and Plan Summary
+	var errorMsg string
+	var planSummary string
+
+	for _, str := range strings.Split(shortMessage, "\n") {
+		trimmedStr := strings.TrimSpace(str)
+
+		if errorMsg == "" && strings.Contains(trimmedStr, "Error") {
+			errorMsg = trimmedStr
+		}
+
+		if strings.Contains(trimmedStr, "projects") && strings.Contains(trimmedStr, "with changes") {
+			planSummary = trimmedStr
+		}
+	}
+
+	if errorMsg != "" && planSummary != "" {
+		shortMessage = errorMsg + "\n" + planSummary
+	} else if errorMsg != "" {
+		shortMessage = errorMsg
+	} else if planSummary != "" {
+		shortMessage = planSummary
+	}
+
+	return status, shortMessage
 }

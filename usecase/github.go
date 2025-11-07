@@ -1,6 +1,9 @@
 package usecase
 
-import "fmt"
+import (
+	"fmt"
+	"time"
+)
 
 var (
 	VALIDATE = "validate"
@@ -51,6 +54,13 @@ type PRParams struct {
 	SlackChannel  string
 
 	Outputs string
+}
+
+type PRComments struct {
+	ID        int       `json:"id"`
+	Body      string    `json:"body"`
+	CreatedAt time.Time `json:"created_at"`
+	UpdatedAt time.Time `json:"updated_at"`
 }
 
 func NewPR(command string, PRNum int) string {

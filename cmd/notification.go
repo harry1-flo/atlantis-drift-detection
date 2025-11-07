@@ -47,6 +47,9 @@ var notificationCmd = &cobra.Command{
 		}
 
 		prParams, isNewPR := gc.IsNewPR()
+		status, shortMessage := gc.GetCommentsLastPR()
+
+		prParams.Outputs = shortMessage
 		prParams.Pusher = atReqParams.PRAuthor
 		prParams.PushCommit = atReqParams.RepoCommitHash
 		prParams.Command = atReqParams.ATCommand
@@ -54,13 +57,6 @@ var notificationCmd = &cobra.Command{
 		prParams.SlackChannel = atReqParams.SlackChannel
 		prParams.Outputs = atReqParams.Outputs
 		prParams.RepoRelDir = atReqParams.RepoRelDir
-
-		status, msg := utils.LinseToParseLastMesasge(atReqParams.Outputs)
-		prParams.Outputs = msg
-
-		log.Println("atReqParams.Outputs : ", atReqParams.Outputs)
-		log.Println("parsing Terraform Outputs : ", msg)
-		log.Println(">>>>>>>>>>>>>> isNewPR : ", isNewPR, "status : ", status, "command : ", prParams.Command)
 
 		// PR 처음인 경우
 		if isNewPR {
