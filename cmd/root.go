@@ -53,7 +53,7 @@ func init() {
 func Execute() {
 	rootCmd.AddCommand(healthCmd)
 	rootCmd.AddCommand(planCmd)
-	rootCmd.AddCommand(githubCmd)
+	rootCmd.AddCommand(notificationCmd)
 
 	if err := rootCmd.Execute(); err != nil {
 		log.Println("Error executing command:", err)

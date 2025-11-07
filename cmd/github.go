@@ -19,27 +19,27 @@ PR 생성 시
 
 슬랙메시지 시, 아래 스레드로 달릴 수 있는지?
 */
-var githubCmd = &cobra.Command{
-	Use:   "github",
-	Short: "A CLI tool for managing your github",
-	Long:  `A CLI tool for managing your github`,
+var notificationCmd = &cobra.Command{
+	Use:   "notification",
+	Short: "A CLI tool for managing your notification",
+	Long:  `A CLI tool for managing your notification`,
 	Run: func(cmd *cobra.Command, args []string) {
 
 		var atReqParams usecase.AtlantisRequestParams
-		atReqParams.BranchRef = cmd.PersistentFlags().Lookup("at-branch-ref").Value.String()
-		atReqParams.BranchName = cmd.PersistentFlags().Lookup("at-branch-name").Value.String()
-		atReqParams.RepoName = cmd.PersistentFlags().Lookup("at-repo-name").Value.String()
-		atReqParams.RepoCommitHash = cmd.PersistentFlags().Lookup("at-commit-hash").Value.String()
-		atReqParams.PRNum = cmd.PersistentFlags().Lookup("at-pr-num").Value.String()
-		atReqParams.PRURL = cmd.PersistentFlags().Lookup("at-pr-url").Value.String()
-		atReqParams.PRAuthor = cmd.PersistentFlags().Lookup("at-pr-author").Value.String()
-		atReqParams.GHToken = cmd.PersistentFlags().Lookup("at-gh-token").Value.String()
-		atReqParams.ATCommand = cmd.PersistentFlags().Lookup("at-command").Value.String()
-		atReqParams.Owner = cmd.PersistentFlags().Lookup("at-owner").Value.String()
-		atReqParams.RepoRelDir = cmd.PersistentFlags().Lookup("at-repo-rel-dir").Value.String()
-		atReqParams.SlackBotToken = cmd.PersistentFlags().Lookup("at-slack-bottoken").Value.String()
-		atReqParams.SlackChannel = cmd.PersistentFlags().Lookup("at-slack-channel").Value.String()
-		atReqParams.Outputs = cmd.PersistentFlags().Lookup("at-outputs").Value.String()
+		atReqParams.BranchRef, _ = cmd.Flags().GetString("at-branch-ref")
+		atReqParams.BranchName, _ = cmd.Flags().GetString("at-branch-name")
+		atReqParams.RepoName, _ = cmd.Flags().GetString("at-repo-name")
+		atReqParams.RepoCommitHash, _ = cmd.Flags().GetString("at-commit-hash")
+		atReqParams.PRNum, _ = cmd.Flags().GetString("at-pr-num")
+		atReqParams.PRURL, _ = cmd.Flags().GetString("at-pr-url")
+		atReqParams.PRAuthor, _ = cmd.Flags().GetString("at-pr-author")
+		atReqParams.GHToken, _ = cmd.Flags().GetString("at-gh-token")
+		atReqParams.ATCommand, _ = cmd.Flags().GetString("at-command")
+		atReqParams.Owner, _ = cmd.Flags().GetString("at-owner")
+		atReqParams.RepoRelDir, _ = cmd.Flags().GetString("at-repo-rel-dir")
+		atReqParams.SlackBotToken, _ = cmd.Flags().GetString("at-slack-bottoken")
+		atReqParams.SlackChannel, _ = cmd.Flags().GetString("at-slack-channel")
+		atReqParams.Outputs, _ = cmd.Flags().GetString("at-outputs")
 
 		log.Println("terraform Outputs : ", atReqParams.Outputs)
 
@@ -84,19 +84,19 @@ var githubCmd = &cobra.Command{
 }
 
 func init() {
-	githubCmd.PersistentFlags().String("at-branch-ref", "", "The Atlantis branch reference")
-	githubCmd.PersistentFlags().String("at-branch-name", "", "The Atlantis branch name")
-	githubCmd.PersistentFlags().String("at-repo-name", "", "The Atlantis repository name")
-	githubCmd.PersistentFlags().String("at-commit-hash", "", "The Atlantis commit hash")
-	githubCmd.PersistentFlags().String("at-pr-num", "", "The Atlantis PR number")
-	githubCmd.PersistentFlags().String("at-pr-url", "", "The Atlantis PR URL")
-	githubCmd.PersistentFlags().String("at-pr-author", "", "The Atlantis PR author")
-	githubCmd.PersistentFlags().String("at-gh-token", "", "The Github token")
-	githubCmd.PersistentFlags().String("at-command", "", "The Atlantis command")
-	githubCmd.PersistentFlags().String("at-owner", "", "The Atlantis owner")
-	githubCmd.PersistentFlags().String("at-repo-rel-dir", "", "The Atlantis repository relative directory")
-	githubCmd.PersistentFlags().String("at-slack-bottoken", "", "The Atlantis slack webhook URL")
-	githubCmd.PersistentFlags().String("at-slack-channel", "", "The Atlantis slack channel")
-	githubCmd.PersistentFlags().String("at-outputs", "", "The Atlantis outputs")
+	notificationCmd.PersistentFlags().String("at-branch-ref", "", "The Atlantis branch reference")
+	notificationCmd.PersistentFlags().String("at-branch-name", "", "The Atlantis branch name")
+	notificationCmd.PersistentFlags().String("at-repo-name", "", "The Atlantis repository name")
+	notificationCmd.PersistentFlags().String("at-commit-hash", "", "The Atlantis commit hash")
+	notificationCmd.PersistentFlags().String("at-pr-num", "", "The Atlantis PR number")
+	notificationCmd.PersistentFlags().String("at-pr-url", "", "The Atlantis PR URL")
+	notificationCmd.PersistentFlags().String("at-pr-author", "", "The Atlantis PR author")
+	notificationCmd.PersistentFlags().String("at-gh-token", "", "The Github token")
+	notificationCmd.PersistentFlags().String("at-command", "", "The Atlantis command")
+	notificationCmd.PersistentFlags().String("at-owner", "", "The Atlantis owner")
+	notificationCmd.PersistentFlags().String("at-repo-rel-dir", "", "The Atlantis repository relative directory")
+	notificationCmd.PersistentFlags().String("at-slack-bottoken", "", "The Atlantis slack webhook URL")
+	notificationCmd.PersistentFlags().String("at-slack-channel", "", "The Atlantis slack channel")
+	notificationCmd.PersistentFlags().String("at-outputs", "", "The Atlantis outputs")
 
 }
