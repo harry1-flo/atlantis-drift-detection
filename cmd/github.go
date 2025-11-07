@@ -84,19 +84,19 @@ var notificationCmd = &cobra.Command{
 }
 
 func init() {
-	notificationCmd.PersistentFlags().String("at-branch-ref", "", "The Atlantis branch reference")
-	notificationCmd.PersistentFlags().String("at-branch-name", "", "The Atlantis branch name")
-	notificationCmd.PersistentFlags().String("at-repo-name", "", "The Atlantis repository name")
-	notificationCmd.PersistentFlags().String("at-commit-hash", "", "The Atlantis commit hash")
-	notificationCmd.PersistentFlags().String("at-pr-num", "", "The Atlantis PR number")
-	notificationCmd.PersistentFlags().String("at-pr-url", "", "The Atlantis PR URL")
-	notificationCmd.PersistentFlags().String("at-pr-author", "", "The Atlantis PR author")
-	notificationCmd.PersistentFlags().String("at-gh-token", "", "The Github token")
-	notificationCmd.PersistentFlags().String("at-command", "", "The Atlantis command")
-	notificationCmd.PersistentFlags().String("at-owner", "", "The Atlantis owner")
-	notificationCmd.PersistentFlags().String("at-repo-rel-dir", "", "The Atlantis repository relative directory")
-	notificationCmd.PersistentFlags().String("at-slack-bottoken", "", "The Atlantis slack webhook URL")
-	notificationCmd.PersistentFlags().String("at-slack-channel", "", "The Atlantis slack channel")
-	notificationCmd.PersistentFlags().String("at-outputs", "", "The Atlantis outputs")
+	notificationCmd.Flags().String("at-branch-ref", "", "The Atlantis branch reference")
+	notificationCmd.Flags().String("at-branch-name", "", "The Atlantis branch name")
+	notificationCmd.Flags().String("at-repo-name", "", "The Atlantis repository name")
+	notificationCmd.Flags().String("at-commit-hash", "", "The Atlantis commit hash")
+	notificationCmd.Flags().String("at-pr-num", "", "The Atlantis PR number")
+	notificationCmd.Flags().String("at-pr-url", "", "The Atlantis PR URL")
+	notificationCmd.Flags().String("at-pr-author", "", "The Atlantis PR author")
+	notificationCmd.Flags().String("at-gh-token", "", "The Github token")
+	notificationCmd.Flags().String("at-command", "", "The Atlantis command")
+	notificationCmd.Flags().String("at-owner", "", "The Atlantis owner")
+	notificationCmd.Flags().String("at-repo-rel-dir", "", "The Atlantis repository relative directory")
+	notificationCmd.Flags().String("at-slack-bottoken", "", "The Atlantis slack webhook URL")
+	notificationCmd.Flags().String("at-slack-channel", "", "The Atlantis slack channel")
+	notificationCmd.Flags().String("at-outputs", "", "The Atlantis outputs")
 
 }
