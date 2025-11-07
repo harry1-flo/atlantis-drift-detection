@@ -41,11 +41,8 @@ var notificationCmd = &cobra.Command{
 		atReqParams.SlackChannel, _ = cmd.Flags().GetString("at-slack-channel")
 		atReqParams.Outputs, _ = cmd.Flags().GetString("at-outputs")
 
-		log.Println("terraform Outputs : ", atReqParams.Outputs)
-
 		gc, err := client.NewGithubRequest(atReqParams)
 		if err != nil {
-			log.Println("atReqParams : ", atReqParams)
 			log.Fatalf("github request error: %s", err)
 		}
 
@@ -62,6 +59,7 @@ var notificationCmd = &cobra.Command{
 		prParams.Outputs = msg
 
 		log.Println("parsing Terraform Outputs : ", msg)
+		log.Println(">>>>>>>>>>>>>> isNewPR : ", isNewPR, "status : ", status, "command : ", prParams.Command)
 
 		// PR 처음인 경우
 		if isNewPR {

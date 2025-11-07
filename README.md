@@ -31,13 +31,13 @@
 ```
 
 ./tt notification \
---at-branch-ref tt \
---at-branch-name tt \
---at-repo-name tt \
---at-commit-hash tt \
---at-pr-num tt \
---at-pr-url tt \
---at-pr-author tt \
+--at-branch-ref tt \ main
+--at-branch-name tt \ feat
+--at-repo-name tt \ cloudt-tes tes
+--at-commit-hash tt \ asdf
+--at-pr-num tt \ 46
+--at-pr-url tt \ pull url
+--at-pr-author tt \ harr
 --at-gh-token tt \
 --at-command validate \
 --at-owner tt \

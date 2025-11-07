@@ -25,3 +25,6 @@ run: build
 
 test:
 	go test -v ./...
+
+relase: 
+	gh relase create 
