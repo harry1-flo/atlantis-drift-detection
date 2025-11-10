@@ -126,6 +126,15 @@ func SendSlackAtlantisNoti(params usecase.PRParams, status string) error {
 		title = usecase.Apply(params.Command, params.Number)
 	}
 
+	fmt.Println("PR link : ", params.URL)
+	fmt.Println("PR status : ", params.State)
+	fmt.Println("PR pusher : ", params.Pusher)
+	fmt.Println("PR commit : ", params.PushCommit)
+	fmt.Println("PR outputs : ", params.Outputs)
+	fmt.Println("PR number : ", params.Number)
+	fmt.Println("PR commits : ", params.Commits)
+	fmt.Println("PR change file count : ", params.ChangeFileCount)
+
 	attachment := slack.Attachment{
 		Color: color,
 		Title: title,
@@ -147,12 +156,7 @@ func SendSlackAtlantisNoti(params usecase.PRParams, status string) error {
 			},
 			{
 				Title: "Commit",
-				Value: params.PushCommit[:7], // short commit hash
-				Short: true,
-			},
-			{
-				Title: "Project",
-				Value: params.RepoRelDir,
+				Value: params.PushCommit, // short commit hash
 				Short: true,
 			},
 			{

@@ -26,20 +26,18 @@ var notificationCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 
 		var atReqParams usecase.AtlantisRequestParams
-		atReqParams.BranchRef, _ = cmd.Flags().GetString("at-branch-ref")
-		atReqParams.BranchName, _ = cmd.Flags().GetString("at-branch-name")
-		atReqParams.RepoName, _ = cmd.Flags().GetString("at-repo-name")
-		atReqParams.RepoCommitHash, _ = cmd.Flags().GetString("at-commit-hash")
-		atReqParams.PRNum, _ = cmd.Flags().GetString("at-pr-num")
-		atReqParams.PRURL, _ = cmd.Flags().GetString("at-pr-url")
-		atReqParams.PRAuthor, _ = cmd.Flags().GetString("at-pr-author")
-		atReqParams.GHToken, _ = cmd.Flags().GetString("at-gh-token")
-		atReqParams.ATCommand, _ = cmd.Flags().GetString("at-command")
-		atReqParams.Owner, _ = cmd.Flags().GetString("at-owner")
-		atReqParams.RepoRelDir, _ = cmd.Flags().GetString("at-repo-rel-dir")
-		atReqParams.SlackBotToken, _ = cmd.Flags().GetString("at-slack-bottoken")
-		atReqParams.SlackChannel, _ = cmd.Flags().GetString("at-slack-channel")
-		atReqParams.Outputs, _ = cmd.Flags().GetString("at-outputs")
+
+		atReqParams.BaseRepoName, _ = cmd.Flags().GetString("base-repo-name")
+		atReqParams.BaseRepoOwner, _ = cmd.Flags().GetString("base-repo-owner")
+		atReqParams.HeadCommit, _ = cmd.Flags().GetString("head-commit")
+		atReqParams.PullURL, _ = cmd.Flags().GetString("pull-url")
+		atReqParams.PullAuthor, _ = cmd.Flags().GetString("pull-author")
+		atReqParams.Dir, _ = cmd.Flags().GetString("dir")
+		atReqParams.UserName, _ = cmd.Flags().GetString("user-name")
+		atReqParams.CommandName, _ = cmd.Flags().GetString("command-name")
+		atReqParams.GHToken, _ = cmd.Flags().GetString("gh-token")
+		atReqParams.SlackBotToken, _ = cmd.Flags().GetString("slack-bot-token")
+		atReqParams.SlackChannel, _ = cmd.Flags().GetString("slack-channel")
 
 		gc, err := client.NewGithubRequest(atReqParams)
 		if err != nil {
@@ -47,15 +45,15 @@ var notificationCmd = &cobra.Command{
 		}
 
 		prParams, isNewPR := gc.IsNewPR()
-		status, shortMessage := gc.GetCommentsLastPR()
+		status, shortMessage := gc.GetCommentsLastPR(prParams)
 
+		prParams.Command = atReqParams.CommandName
 		prParams.Outputs = shortMessage
-		prParams.Pusher = atReqParams.PRAuthor
-		prParams.PushCommit = atReqParams.RepoCommitHash
-		prParams.Command = atReqParams.ATCommand
 		prParams.SlackBotToken = atReqParams.SlackBotToken
 		prParams.SlackChannel = atReqParams.SlackChannel
-		prParams.RepoRelDir = atReqParams.RepoRelDir
+		prParams.URL = atReqParams.PullURL
+		prParams.PushCommit = atReqParams.HeadCommit
+		prParams.Pusher = atReqParams.PullAuthor
 
 		// PR 처음인 경우
 		if isNewPR {
@@ -66,12 +64,12 @@ var notificationCmd = &cobra.Command{
 			return
 		}
 
-		/*
-			init / validate 실패
-			plan 실패
-			apply 성공
-			apply 실패
-		*/
+		// /*
+		// 	init / validate 실패
+		// 	plan 실패
+		// 	apply 성공
+		// 	apply 실패
+		// */
 		if status == "failed" {
 			if err := utils.SendSlackAtlantisNoti(prParams, status); err != nil {
 				log.Fatalf("slack send error: %s", err)
@@ -85,19 +83,17 @@ var notificationCmd = &cobra.Command{
 }
 
 func init() {
-	notificationCmd.Flags().String("at-branch-ref", "", "The Atlantis branch reference")
-	notificationCmd.Flags().String("at-branch-name", "", "The Atlantis branch name")
-	notificationCmd.Flags().String("at-repo-name", "", "The Atlantis repository name")
-	notificationCmd.Flags().String("at-commit-hash", "", "The Atlantis commit hash")
-	notificationCmd.Flags().String("at-pr-num", "", "The Atlantis PR number")
-	notificationCmd.Flags().String("at-pr-url", "", "The Atlantis PR URL")
-	notificationCmd.Flags().String("at-pr-author", "", "The Atlantis PR author")
-	notificationCmd.Flags().String("at-gh-token", "", "The Github token")
-	notificationCmd.Flags().String("at-command", "", "The Atlantis command")
-	notificationCmd.Flags().String("at-owner", "", "The Atlantis owner")
-	notificationCmd.Flags().String("at-repo-rel-dir", "", "The Atlantis repository relative directory")
-	notificationCmd.Flags().String("at-slack-bottoken", "", "The Atlantis slack webhook URL")
-	notificationCmd.Flags().String("at-slack-channel", "", "The Atlantis slack channel")
-	notificationCmd.Flags().String("at-outputs", "", "The Atlantis outputs")
+	notificationCmd.Flags().String("base-repo-name", "", "The base repository name")
+	notificationCmd.Flags().String("base-repo-owner", "", "The base repository owner")
+	notificationCmd.Flags().String("head-commit", "", "The head commit hash")
+	notificationCmd.Flags().String("pull-url", "", "The pull request URL")
+	notificationCmd.Flags().String("pull-author", "", "The pull request author")
+	notificationCmd.Flags().String("dir", "", "The directory")
+	notificationCmd.Flags().String("user-name", "", "The user name")
+	notificationCmd.Flags().String("command-name", "", "The command name")
+	notificationCmd.Flags().Bool("command-has-errors", false, "Whether the command has errors")
 
+	notificationCmd.Flags().String("slack-bot-token", "", "The Slack bot token")
+	notificationCmd.Flags().String("slack-channel", "", "The Slack channel")
+	notificationCmd.Flags().String("gh-token", "", "The Github token")
 }

@@ -27,4 +27,5 @@ test:
 	go test -v ./...
 
 relase: 
-	gh relase create ${VERSION} ./at-plan
+	@read -p "Enter version (e.g., v1.0.0): " version; \
+	gh release create $$version --title "Release $$version" ./at-plan

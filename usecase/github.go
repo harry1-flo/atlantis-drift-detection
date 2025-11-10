@@ -15,20 +15,19 @@ var (
 )
 
 type AtlantisRequestParams struct {
-	BranchRef      string
-	BranchName     string
-	RepoName       string
-	RepoCommitHash string
-	PRNum          string
-	PRURL          string
-	PRAuthor       string
-	GHToken        string
-	Owner          string
-	ATCommand      string // validate, plan, apply
-	RepoRelDir     string // 작업 파일 위치
-	SlackBotToken  string
-	SlackChannel   string
-	Outputs        string
+	BaseRepoName     string
+	BaseRepoOwner    string
+	HeadCommit       string
+	PullURL          string
+	PullAuthor       string
+	Dir              string
+	UserName         string
+	CommandName      string
+	CommandHasErrors bool
+
+	GHToken       string
+	SlackBotToken string
+	SlackChannel  string
 }
 
 type PRParams struct {
