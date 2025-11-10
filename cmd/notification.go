@@ -55,14 +55,14 @@ var notificationCmd = &cobra.Command{
 		prParams.Command = atReqParams.ATCommand
 		prParams.SlackBotToken = atReqParams.SlackBotToken
 		prParams.SlackChannel = atReqParams.SlackChannel
-		prParams.Outputs = atReqParams.Outputs
 		prParams.RepoRelDir = atReqParams.RepoRelDir
-
-		log.Println("isNewPR : %s\tstatus : %s\tshortMessage : %s", isNewPR, status, shortMessage)
 
 		// PR 처음인 경우
 		if isNewPR {
-			utils.SendSlackAtlantisNoti(prParams, status)
+			err := utils.SendSlackAtlantisNoti(prParams, status)
+			if err != nil {
+				log.Fatalf("slack send error: %s", err)
+			}
 			return
 		}
 
@@ -72,8 +72,11 @@ var notificationCmd = &cobra.Command{
 			apply 성공
 			apply 실패
 		*/
-		if status == "failed" && (prParams.Command == usecase.PLAN || prParams.Command == usecase.APPLY) {
-			utils.SendSlackAtlantisNoti(prParams, status)
+		if status == "failed" {
+			if err := utils.SendSlackAtlantisNoti(prParams, status); err != nil {
+				log.Fatalf("slack send error: %s", err)
+			}
+
 			return
 		}
 

@@ -173,7 +173,7 @@ func SendSlackAtlantisNoti(params usecase.PRParams, status string) error {
 		return fmt.Errorf("slack message failed: %w", err)
 	}
 
-	fmt.Println("✅ Slack notification sent successfully! status : ", params.State)
+	// fmt.Println("✅ Slack notification sent successfully! status : ", params.State)
 	return nil
 }
 
