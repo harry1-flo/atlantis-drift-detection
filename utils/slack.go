@@ -146,7 +146,7 @@ func SendSlackAtlantisNoti(params usecase.PRParams, status string) error {
 			},
 			{
 				Title: "Status",
-				Value: fmt.Sprintf("%s Terraform %s %s", emoji, getCommandTitle(params.Command), params.State),
+				Value: fmt.Sprintf("%s Terraform %s %s", emoji, getCommandTitle(params.Command), status),
 				Short: false,
 			},
 			{
@@ -159,11 +159,11 @@ func SendSlackAtlantisNoti(params usecase.PRParams, status string) error {
 				Value: params.PushCommit, // short commit hash
 				Short: true,
 			},
-			{
-				Title: "Short-Messages",
-				Value: params.Outputs,
-				Short: true,
-			},
+			// {
+			// 	Title: "Short-Messages",
+			// 	Value: params.Outputs,
+			// 	Short: true,
+			// },
 		},
 		Footer: fmt.Sprintf("PR #%d • %d commits • %d files changed", params.Number, params.Commits, params.ChangeFileCount),
 	}

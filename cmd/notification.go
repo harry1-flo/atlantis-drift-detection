@@ -38,6 +38,7 @@ var notificationCmd = &cobra.Command{
 		atReqParams.GHToken, _ = cmd.Flags().GetString("gh-token")
 		atReqParams.SlackBotToken, _ = cmd.Flags().GetString("slack-bot-token")
 		atReqParams.SlackChannel, _ = cmd.Flags().GetString("slack-channel")
+		atReqParams.CommandHasErrors, _ = cmd.Flags().GetBool("command-has-errors")
 
 		gc, err := client.NewGithubRequest(atReqParams)
 		if err != nil {
@@ -45,15 +46,21 @@ var notificationCmd = &cobra.Command{
 		}
 
 		prParams, isNewPR := gc.IsNewPR()
-		status, shortMessage := gc.GetCommentsLastPR(prParams)
+		// status, shortMessage := gc.GetCommentsLastPR(prParams)
 
 		prParams.Command = atReqParams.CommandName
-		prParams.Outputs = shortMessage
 		prParams.SlackBotToken = atReqParams.SlackBotToken
 		prParams.SlackChannel = atReqParams.SlackChannel
 		prParams.URL = atReqParams.PullURL
 		prParams.PushCommit = atReqParams.HeadCommit
 		prParams.Pusher = atReqParams.PullAuthor
+
+		log.Println("isError : ", atReqParams.CommandHasErrors)
+
+		status := "success"
+		if !atReqParams.CommandHasErrors {
+			status = "failed"
+		}
 
 		// PR 처음인 경우
 		if isNewPR {
